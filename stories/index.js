@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 
 import { storiesOf } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
@@ -11,12 +11,12 @@ import DayList from "components/DayList";
 import InterviewerListItem from "components/InterviewerListItem";
 import InterviewerList from "components/InterviewerList";
 import Appointment from "components/Appointment/index";
- import Header from "components/Appointment/Header";
- import Empty from "components/Appointment/Empty";
- import Show from "components/Appointment/Show";
- import Confirm from "components/Appointment/Confirm";
- import Status from "components/Appointment/Status";
- import Error from "components/Appointment/Error";
+import Header from "components/Appointment/Header";
+import Empty from "components/Appointment/Empty";
+import Show from "components/Appointment/Show";
+import Confirm from "components/Appointment/Confirm";
+import Status from "components/Appointment/Status";
+import Error from "components/Appointment/Error";
 
 
 storiesOf("Button", module)
@@ -141,6 +141,22 @@ storiesOf("Appointment", module)
   })
   .add("Appointment", () => <Appointment />)
   .add("Appointment with Time", () => <Appointment time="1pm" />)
+  .add("Appointment Empty", () => (
+    <Fragment>
+      <Appointment id={1} time="1pm" />
+      <Appointment id="last" time="2pm" />
+    </Fragment>
+  ))
+  .add("Appointment Booked", () => (
+    <Fragment>
+      <Appointment
+        id={1}
+        time="1pm"
+        interview={{ student: "Selena Sizer", interviewer }}
+      />
+      <Appointment id="last" time="1pm" />
+    </Fragment>
+  ))
   .add("Header", () => <Header time="1pm" />)
   .add("Empty", () => <Empty onAdd={action("onAdd")} />)
-  .add("Show", () => <Show student={"Lydia Miller-Jones"} interviewer={interviewer} onEdit={action("onEdit")} onDelete={action("onDelete")}/>) 
+  .add("Show", () => <Show student={"Lydia Miller-Jones"} interviewer={interviewer} onEdit={action("onEdit")} onDelete={action("onDelete")} />)
