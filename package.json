@@ -8,7 +8,9 @@
     "normalize.css": "^8.0.1",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "react-scripts": "3.0.0"
+    "react-hooks": "^1.0.1",
+    "react-scripts": "3.0.0",
+    "testing-library": "^0.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
