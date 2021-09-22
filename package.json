@@ -12,6 +12,7 @@
     "react-scripts": "3.0.0",
     "testing-library": "^0.0.2"
   },
+  "proxy": "http://localhost:8001",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

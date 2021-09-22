@@ -12,7 +12,7 @@ import "components/Appointment/styles.scss";
 import useVisualMode from "hooks/useVisualMode";
 
 export default function Appointment(props) {
-  const { id, time, interview, interviewers, bookInterview, cancelInterview } = props;
+  const { id, time, interview, interviewers } = props;
 
   // Mode Constants & customHook
   const EMPTY = "EMPTY";
@@ -26,50 +26,82 @@ export default function Appointment(props) {
   const ERROR_DELETE = "ERROR_DELETE";
 
   // Default to SHOW if interview is booked, otherwise empty.
-  const { mode, transition, back } = useVisualMode(interview ? SHOW : EMPTY)
+  const { mode, transition, back } = useVisualMode(props.interview ? SHOW : EMPTY)
 
   // Function to run onSave
   function save(name, interviewer) {
+
     const interview = {
       student: name,
       interviewer
     };
 
     transition(SAVING);
-    bookInterview(id, interview)
-      .then(res => transition(SHOW))
-      .catch(err => transition(ERROR_SAVE, true))
+    props
+      .bookInterview(id, interview)
+      .then(() => {
+        transition(SHOW);
+      })
+      .catch((error) => {
+        transition(ERROR_SAVE, true);
+      });
   };
 
-  // Function to run onDelete from Show.
-  function deleteAppt() {
+  const onDelete = () => {
     transition(DELETING, true);
-    cancelInterview(id)
-      .then(res => transition(EMPTY))
-      .catch(err => transition(ERROR_DELETE, true))
+    props
+      .cancelInterview(id)
+      .then(() => {
+        transition(EMPTY);
+      })
+      .catch((error) => {
+        transition(ERROR_DELETE, true);
+      });
+  };
+
+  const onEdit = (name, interviewer) => {
+    transition(EDIT);
   };
 
   return (
-    <article className='appointment' data-testid="appointment">
-      <Header time={time} />
-      {/* Empty interview slot */}
-      {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
-
-      {/* Booked interview slot */}
-      {mode === SHOW && <Show student={interview.student} interviewer={interview.interviewer} onEdit={() => transition(EDIT)} onDelete={() => transition(CONFIRM)} />}
-
-      {/* Create or edit an interview */}
-      {mode === CREATE && <Form interviewers={interviewers} onSave={save} onCancel={() => back()} />}
-      {mode === EDIT && <Form name={interview.student} interviewers={interviewers} interviewer={interview.interviewer.id} onSave={save} onCancel={() => back()} />}
-
-      {/* Saving */}
-      {mode === SAVING && <Status message={"Saving"} />}
-      {mode === ERROR_SAVE && <Error message={"Could not save appointment."} onClose={back} />}
-
-      {/* Deleting */}
-      {mode === DELETING && <Status message={"Deleting"} />}
-      {mode === ERROR_DELETE && <Error message={"Could not delete appointment."} onClose={back} />}
-      {mode === CONFIRM && <Confirm message={"Are you sure you would like to delete?"} onCancel={() => back()} onConfirm={deleteAppt} />}
-    </article>
-  )
+    <article className='appointment'>
+    <Header time={time} />
+    {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
+    {mode === SHOW && (
+      <Show
+        student={interview.student}
+        interviewer={interview.interviewer}
+        onDelete={() => transition(CONFIRM)}
+        onEdit={onEdit}
+      />
+    )}
+    {mode === CREATE && (
+      <Form interviewers={interviewers} onSave={save} onCancel={back} />
+    )}
+    {mode === EDIT && (
+      <Form
+        interviewers={interviewers}
+        interviewer={interview.interviewer.id}
+        name={interview.student}
+        onCancel={() => transition(SHOW)}
+        onSave={save}
+      />
+    )}
+    {mode === SAVING && <Status message='Saving...' />}
+    {mode === CONFIRM && (
+      <Confirm
+        onCancel={back}
+        onConfirm={() => onDelete()}
+        message='Are you sure you want to do this?'
+      />
+    )}
+    {mode === DELETING && <Status message='Deleting...' />}
+    {mode === ERROR_DELETE && (
+      <Error message='Could not cancel appointment' onClose={back} />
+    )}
+    {mode === ERROR_SAVE && (
+      <Error message='Could not save appointment' onClose={back} />
+    )}
+  </article>
+);
 }
