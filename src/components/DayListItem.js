@@ -12,6 +12,7 @@ export default function DayListItem(props) {
   });
 
   const formatSpots = (spots) => {
+    console.log(spots)
     if (spots > 1) {
       return `${spots} spots remaining`;
     }
